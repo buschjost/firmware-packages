@@ -97,6 +97,11 @@ openvpn_ffvpn_hotplug() {
   done
 }
 
+sgw_rules_to_fw3() {
+  uci set firewall.zone_freifunk.device=tnl_+
+  sed -i '/iptables -I FORWARD -o tnl_+ -j ACCEPT$/d' /etc/firewall.user
+}
+
 migrate () {
   log "Migrating from ${OLD_VERSION} to ${VERSION}."
 
@@ -119,6 +124,7 @@ migrate () {
 
   if semverLT ${OLD_VERSION} "0.2.0"; then
     openvpn_ffvpn_hotplug
+    sgw_rules_to_fw3
   fi
 
   # overwrite version with the new version
